@@ -48,8 +48,8 @@ async def verify_doctor(message: types.Message):
     if message.text in last_doctors:
         ned_doctor = get_need_doctor(message.text)
         if ned_doctor.get('count_tickets') == 0:
-            treadd(ned_doctor)
             await message.answer('Запускаем поиск талонов...')
+            treadd(ned_doctor)
 
     else:
         await message.answer('Что то я не понял, давай попробуем заново...')
