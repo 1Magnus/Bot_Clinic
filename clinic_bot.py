@@ -48,8 +48,8 @@ async def verify_doctor(message: types.Message):
         ned_doctor = get_need_doctor(message.text)
         if ned_doctor.get('count_tickets') == 0:
             await message.answer('Запускаем поиск талонов...')
-            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Надо запустить процесс поиска билетов
-
+            print()
+            timer_doctor(ned_doctor)
     else:
         await message.answer('Что то я не понял, давай попробуем заново...')
 
@@ -65,12 +65,17 @@ def check_ticket_doctor(doctor):
     doctor = get_need_doctor(doctor.get('family'))
     ticket = doctor.get('count_tickets')
     if ticket == 0:
-        print('Билетов НЕТ!')
-        return ticket
+        pass
+        # inform_the_user()
 
 
+def timer_doctor(doctor):
+    check_ticket_doctor(doctor)
+    threading.Timer(5.0, timer_doctor, [doctor]).start()  # Перезапуск через 5 секунд
 
 
+async def inform_the_user():
+    await bot.send_message()
 
 
 def main():
