@@ -2,7 +2,6 @@ from aiogram import Bot, Dispatcher, executor, types
 from configs import TOKEN
 from aiogram.dispatcher.filters import Text
 from main import get_tickets
-from datetime import datetime
 import threading
 
 last_department = '45'
@@ -49,7 +48,7 @@ async def verify_doctor(message: types.Message):
         ned_doctor = get_need_doctor(message.text)
         if ned_doctor.get('count_tickets') == 0:
             await message.answer('Запускаем поиск талонов...')
-            treadd(ned_doctor)
+            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Надо запустить процесс поиска билетов
 
     else:
         await message.answer('Что то я не понял, давай попробуем заново...')
@@ -65,11 +64,13 @@ def get_need_doctor(name_doctor):
 def check_ticket_doctor(doctor):
     doctor = get_need_doctor(doctor.get('family'))
     ticket = doctor.get('count_tickets')
-    print(ticket, doctor)
+    if ticket == 0:
+        print('Билетов НЕТ!')
+        return ticket
 
 
-def treadd(doctor):
-    threading.Timer(5, check_ticket_doctor, [doctor]).start()
+
+
 
 
 def main():
