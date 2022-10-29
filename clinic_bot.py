@@ -14,6 +14,8 @@ departmentId = {'Лор': '45'}
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
+timer = []
+
 
 @dp.message_handler(commands='start')
 async def start(message: types.Message):
@@ -48,12 +50,15 @@ async def verify_doctor(message: types.Message):
         ned_doctor = get_need_doctor(message.text)
         if ned_doctor.get('count_tickets') == 0:
             await message.answer('Запускаем поиск талонов...')
-            print()
+            print('Талонов нет, начинаем поиск')
+            timer_doctor(ned_doctor)
+        else:
+            print('Талонов много, ', ned_doctor.get('count_tickets'))
             timer_doctor(ned_doctor)
     else:
         await message.answer('Что то я не понял, давай попробуем заново...')
 
-
+# функции не хендлеры надо вынести в майн
 def get_need_doctor(name_doctor):
     doctors = get_tickets(last_department)
     for doctor in doctors:
@@ -64,19 +69,26 @@ def get_need_doctor(name_doctor):
 def check_ticket_doctor(doctor):
     doctor = get_need_doctor(doctor.get('family'))
     ticket = doctor.get('count_tickets')
-    if ticket == 0:
-        pass
-        # inform_the_user()
+    if ticket:
+        print(doctor.get('count_tickets'), 'Билеты!')
+        inform_the_user()
+
 
 
 def timer_doctor(doctor):
     check_ticket_doctor(doctor)
-    threading.Timer(5.0, timer_doctor, [doctor]).start()  # Перезапуск через 5 секунд
+    global timer
+    t = threading.Timer(5.0, timer_doctor, [doctor])
+    t.start()  # Перезапуск через 5 секунд
+    timer.append(t)
+
 
 
 async def inform_the_user():
-    await bot.send_message()
-
+    # await bot.send_message('')
+    print('Отправка сообщения пользователю')
+    global timer
+    timer[0].cancel()
 
 def main():
     executor.start_polling(dp)
