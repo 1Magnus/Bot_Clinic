@@ -92,7 +92,7 @@ def check_ticket_doctor(doctor):
 
 def timer_doctor(doctor):
     check_ticket_doctor(doctor)
-    t = threading.Timer(5.0, timer_doctor, [doctor])
+    t = threading.Timer(15, timer_doctor, [doctor])
     global TIMER
     TIMER.append(t)
     t.start()
