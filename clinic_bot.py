@@ -8,7 +8,7 @@ last_department = '45'
 last_doctors = []
 need_doctor = None
 count = 0
-username=''
+username = ''
 
 departmentId = {'Лор': '45'}
 
@@ -27,7 +27,7 @@ async def start(message: types.Message):
 
 
 @dp.message_handler(commands='cancel')
-async def cancel(message: types.Message):
+async def cancel(message: types.Message = None):
     global TIMER
     for t in TIMER:
         t.cancel()
@@ -61,12 +61,11 @@ async def verify_doctor(message: types.Message):
         ned_doctor = get_need_doctor(message.text)
         if ned_doctor.get('count_tickets') == 0:
             await message.answer('Запускаем поиск талонов...')
-            print('Талонов нет, начинаем поиск')
             global username
-            username = message.from_user.username
+            username = f'{message.chat.id}'
             timer_doctor(ned_doctor)
         else:
-            print('Талонов много, ', ned_doctor.get('count_tickets'))
+            await message.answer(f"Талонов много, {ned_doctor.get('count_tickets')}")
     else:
         await message.answer('Что то я не понял, давай попробуем заново...')
 
@@ -83,11 +82,12 @@ def check_ticket_doctor(doctor):
     doctor = get_need_doctor(doctor.get('family'))
     ticket = doctor.get('count_tickets')
     if ticket:
-        print(doctor.get('count_tickets'), 'Билеты!')
         inform_the_user()
-    else:
-        print('Билетов НЕТ')
-        # inform_the_user()
+        cancel()
+        # print(doctor.get('count_tickets'), 'Билеты!')
+    # else:
+    #     print('Билетов НЕТ')
+    # inform_the_user()
 
 
 def timer_doctor(doctor):
@@ -100,10 +100,8 @@ def timer_doctor(doctor):
 
 async def inform_the_user():
     # INFORM USER
-    await bot.send_message('Билеты есть!')
-    print('Отправка сообщения пользователю')
-    global timer
-    timer.cancel()
+    for i in range(5):
+        await bot.send_message(username, 'Билеты есть!')
 
 
 def main():
